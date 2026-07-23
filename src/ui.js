@@ -188,8 +188,34 @@ function visibleLen(str) {
   return String(str).replace(/\x1b\[[0-9;]*m/g, '').length;
 }
 
-function padVisible(str, len) {
+function truncateVisible(str, len) {
   const s = String(str ?? '');
+  if (visibleLen(s) <= len) return s;
+  // Truncate by visible chars (ANSI-safe): keep codes, drop overflow text.
+  let out = '';
+  let seen = 0;
+  const re = /\x1b\[[0-9;]*m/g;
+  let last = 0;
+  let match;
+  while ((match = re.exec(s)) !== null) {
+    for (const ch of s.slice(last, match.index)) {
+      if (seen >= len) return out;
+      out += ch;
+      seen += 1;
+    }
+    out += match[0];
+    last = match.index + match[0].length;
+  }
+  for (const ch of s.slice(last)) {
+    if (seen >= len) break;
+    out += ch;
+    seen += 1;
+  }
+  return out;
+}
+
+function padVisible(str, len) {
+  const s = truncateVisible(str, len);
   const extra = len - visibleLen(s);
   return extra > 0 ? s + ' '.repeat(extra) : s;
 }
@@ -257,12 +283,37 @@ export function printDenied() {
   console.error(c.red('make: *** Permission denied.') + c.dim(' (Hint: you know what to do.)'));
 }
 
+/** Punchlines for the cold open — rotate so re-runs feel fresh. */
+export const COLD_OPEN_PUNCHLINES = [
+  'Okay. Privileges accepted. Finding lunch…',
+  'root access: sandwich',
+  'make: recipe found in /dev/stomach',
+  'Elevated. Querying nearby carbohydrates…',
+  'Permission granted. Assembling lunch kernel…',
+  'uid=0(root) gid=0(sandwich) groups=0(hungry)',
+  'CAP_SYS_LUNCH acquired. Scanning menus…',
+  'sudo: sandwich authentication successful',
+];
+
+const SMUG_DOUBLE_SUDO =
+  'Double sudo detected. Sandwich priority elevated to realtime.';
+
+function pickRandom(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
 /** Cold open — first thing you see when sudo actually works. */
-export async function printColdOpen() {
+export async function printColdOpen({ sudoSudo = false } = {}) {
   const line = `${c.dim('$')} ${c.bold('sudo make me a sandwich!')}`;
-  const punch = c.green('Okay. Privileges accepted. Finding lunch…');
+  const punch = c.green(pickRandom(COLD_OPEN_PUNCHLINES));
   console.log();
-  await typewrite(`${line}\n${punch}\n`, { cps: 180 });
+  if (sudoSudo) {
+    await typewrite(`${line}\n${punch}\n${c.magenta(SMUG_DOUBLE_SUDO)}\n`, {
+      cps: 180,
+    });
+  } else {
+    await typewrite(`${line}\n${punch}\n`, { cps: 180 });
+  }
 }
 
 export async function printOptions(options, { source, address } = {}) {
@@ -286,8 +337,8 @@ export async function printOptions(options, { source, address } = {}) {
 
   const cols = [
     { key: 'idx', label: '#', width: 3 },
-    { key: 'name', label: 'Shop', width: 22 },
-    { key: 'item', label: 'Sandwich', width: 28 },
+    { key: 'name', label: 'Shop', width: 28 },
+    { key: 'item', label: 'Sandwich', width: 24 },
     { key: 'price', label: 'Price', width: 8 },
     { key: 'eta', label: 'ETA', width: 10 },
     { key: 'distance', label: 'Dist', width: 8 },
@@ -321,7 +372,7 @@ export async function printOptions(options, { source, address } = {}) {
     lines.push('');
   } else {
     lines.push(c.bold('Demo checkout'));
-    lines.push(c.dim('  Pick a number below to fake an order + watch it deliver.'));
+    lines.push(c.dim('  Pick a number to read the description, then Y to order (or b to go back).'));
     lines.push(
       c.dim('  DoorDash CLI is currently in beta — this demo does not place a real order.')
     );
@@ -343,13 +394,20 @@ ${c.bold('Usage')}
 ${c.bold('Options')}
   --granted, -g     Skip the refusal gag; show sandwich options
   --denied, -d      Show the permission-denied gag
-  --pick <n>        Demo mode: select option n and run delivery timeline
+  --pick <n>        Demo mode: open option n (describe → confirm → deliver)
   --address <addr>  Delivery address (default: Best Buy HQ, Richfield MN)
+  --quiet, -q       No terminal bell on delivery (or set SUDO_SANDWICH_QUIET=1)
+  --sudo-sudo       Double-sudo easter egg (smug cold open / sign-off)
   --help, -h        Show this help (including live CLI login)
 
 ${c.bold('Faithful phrase')}
   npx sudo-sandwich init >> ~/.zshrc
   # then: sudo make me a sandwich!
+  # or:   sudo sudo make me a sandwich!   ${c.dim('# --sudo-sudo easter egg')}
+
+${c.bold('After demo delivery')}
+  Tip the dasher (TTY), then get a shareable ASCII receipt.
+  Non-interactive ${c.cyan('--pick')} skips the tip prompt (defaults to 20%).
 
 ${c.bold('Live DoorDash CLI')} ${c.dim('(beta)')}
   Official ${c.cyan('dd-cli')} is a limited DoorDash beta (US/Canada macOS, waitlist).

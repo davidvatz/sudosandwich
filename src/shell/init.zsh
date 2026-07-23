@@ -1,5 +1,6 @@
 # >>> sudo-sandwich >>>
 # Literal phrase support for: sudo make me a sandwich!
+# Also: sudo sudo make me a sandwich!  (double-sudo easter egg)
 # Undo: remove this block from your shell rc, then `unfunction make sudo` (zsh)
 # or `unset -f make sudo` (bash).
 
@@ -36,6 +37,22 @@ make() {
 }
 
 sudo() {
+  # Double-sudo easter egg: `sudo sudo make me a sandwich!`
+  # Outer sudo is this function; args begin with another "sudo".
+  if [ "$1" = "sudo" ] && [ "$2" = "make" ]; then
+    shift
+    # Now: make me a sandwich!
+    if [ "$1" = "make" ]; then
+      shift
+      if sudo-sandwich__is_phrase "$@"; then
+        sudo-sandwich__run --granted --sudo-sudo
+        return $?
+      fi
+      set -- make "$@"
+    fi
+    set -- sudo "$@"
+  fi
+
   if [ "$1" = "make" ]; then
     shift
     if sudo-sandwich__is_phrase "$@"; then

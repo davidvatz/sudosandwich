@@ -10,9 +10,10 @@
 npx sudo-sandwich
 ```
 
-You'll get a short `Flibbertigibbeting...` moment, then the sandwich board streams in character-by-character (LLM-style). In demo mode, pick a number to fake-checkout and watch a pithy delivery timeline.
+You'll get a short `Flibbertigibbeting...` moment (cold-open punchline rotates each run), then the sandwich board streams in character-by-character (LLM-style). In demo mode, pick a number to read the description, confirm with `Y` to fake-checkout, and watch a pithy delivery timeline (≤12s). After delivery: tip the dasher gag (TTY), a shareable ASCII receipt, and a terminal bell (unless quiet).
 
-Skip the typewriter effect: `SUDO_SANDWICH_NO_TYPE=1 npx sudo-sandwich`
+Skip the typewriter effect: `SUDO_SANDWICH_NO_TYPE=1 npx sudo-sandwich`  
+Silence the delivery bell: `--quiet` / `-q` or `SUDO_SANDWICH_QUIET=1`
 
 ### The refusal gag
 
@@ -46,6 +47,9 @@ make me a sandwich!
 
 sudo make me a sandwich!
 # 🥪 Sandwich acquired...
+
+sudo sudo make me a sandwich!
+# Double sudo detected. Sandwich priority elevated to realtime.
 ```
 
 ### Undo
@@ -80,13 +84,21 @@ Checkout stays in DoorDash — this CLI only surfaces options.
 | `--denied`, `-d` | Show the permission-denied gag |
 | `--pick <n>`, `-p` | Demo mode: select option `n` and run the delivery timeline (non-interactive) |
 | `--address <addr>` | Address for live DoorDash search |
+| `--quiet`, `-q` | No terminal bell on delivery (`SUDO_SANDWICH_QUIET=1` also works) |
+| `--sudo-sudo` | Double-sudo easter egg (smug cold open / sign-off) |
 | `--help`, `-h` | Help |
 | `init` | Print the shell wrapper snippet |
 
-Demo delivery without the prompt:
+Demo delivery without the prompt (auto tip 20%, still prints receipt; no tip hang):
 
 ```bash
-node bin/cli.js --pick 1
+node bin/cli.js --pick 1 --quiet
+```
+
+Double-sudo easter egg without the shell wrapper:
+
+```bash
+npx sudo-sandwich --granted --sudo-sudo
 ```
 
 Strict xkcd mode (refuse unless elevated / `--granted`):
