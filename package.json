@@ -1,6 +1,6 @@
 {
   "name": "sudo-sandwich",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "sudo make me a sandwich — DoorDash sandwich options from the command line (xkcd #149, but real)",
   "type": "module",
   "bin": {
