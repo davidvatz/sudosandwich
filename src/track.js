@@ -50,7 +50,10 @@ export function allocateStepDurations(stepCount, maxTotalMs = MAX_DELIVERY_MS) {
 
 export function printSandwichCard(option) {
   console.log();
-  console.log(`${c.bold(c.cyan(option.item))} ${c.dim('—')} ${c.bold(option.name)}`);
+  const title = option.personalized
+    ? c.bold(c.magenta(option.item))
+    : c.bold(c.cyan(option.item));
+  console.log(`${title} ${c.dim('—')} ${c.bold(option.name)}`);
   if (option.description) {
     console.log(c.dim(`  ${option.description}`));
   } else {

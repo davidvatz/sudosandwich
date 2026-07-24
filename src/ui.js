@@ -348,6 +348,7 @@ export async function printOptions(options, { source, address } = {}) {
   lines.push(c.dim(cols.map((col) => '─'.repeat(col.width)).join('  ')));
 
   for (const [i, opt] of options.entries()) {
+    const featured = Boolean(opt.personalized);
     const row = {
       idx: String(i + 1),
       name: opt.name ?? '—',
@@ -356,7 +357,12 @@ export async function printOptions(options, { source, address } = {}) {
       eta: opt.eta ?? '—',
       distance: opt.distance ?? '—',
     };
-    lines.push(cols.map((col) => padVisible(row[col.key], col.width)).join('  '));
+    const cells = cols.map((col) => {
+      const padded = padVisible(row[col.key], col.width);
+      if (featured && col.key === 'item') return c.bold(c.magenta(padded));
+      return padded;
+    });
+    lines.push(cells.join('  '));
     if (opt.url) {
       lines.push(c.dim(`    → ${opt.url}`));
     }
@@ -373,6 +379,7 @@ export async function printOptions(options, { source, address } = {}) {
   } else {
     lines.push(c.bold('Demo checkout'));
     lines.push(c.dim('  Pick a number to read the description, then Y to order (or b to go back).'));
+    lines.push(c.dim('  Your named sandwich is highlighted.'));
     lines.push(
       c.dim('  DoorDash CLI is currently in beta — this demo does not place a real order.')
     );

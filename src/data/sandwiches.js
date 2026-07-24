@@ -240,10 +240,9 @@ function personalizedName() {
 
 function withPersonalizedItem(entry) {
   if (!entry?.personalized) return { ...entry };
-  const { personalized, ...rest } = entry;
   const who = titleCaseUsername(currentUsername());
   return {
-    ...rest,
+    ...entry,
     item: personalizedName(),
     description: `A Dutch-crunch legend built for ${who}: stacked meats, melted cheese, and Ike's secret sauce. Privilege never tasted so carb-loaded.`,
   };
