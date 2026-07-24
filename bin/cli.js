@@ -98,6 +98,10 @@ function printSignOff({ sudoSudo = false } = {}) {
     console.log(c.dim('Double-sudo complete. Lunch scheduling class: realtime.'));
   }
   console.log(c.dim('Inspired by xkcd #149 — ') + c.cyan('https://xkcd.com/149/'));
+  console.log(
+    c.dim('Created by David Vatz from Cursor — ') +
+      c.cyan('https://www.linkedin.com/in/davidvatz')
+  );
   console.log();
 }
 

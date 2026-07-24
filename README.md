@@ -4,6 +4,8 @@
 
 [xkcd #149](https://xkcd.com/149/) meets DoorDash's `dd-cli`. A zero-config CLI that refuses to make you a sandwich — until you ask properly — then returns options of where to order one.
 
+Created by [David Vatz](https://www.linkedin.com/in/davidvatz) from Cursor.
+
 ## Quick start
 
 ```bash
