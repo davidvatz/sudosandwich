@@ -1,7 +1,7 @@
 {
   "name": "sudo-sandwich",
-  "version": "1.0.0",
-  "description": "sudo make me a sandwich \u2014 DoorDash sandwich options from the command line (xkcd #149, but real)",
+  "version": "1.0.1",
+  "description": "sudo make me a sandwich — DoorDash sandwich options from the command line (xkcd #149, but real)",
   "type": "module",
   "bin": {
     "sudo-sandwich": "./bin/cli.js"
